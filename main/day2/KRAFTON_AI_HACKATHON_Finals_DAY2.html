@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VideoAgent — The Video Analysis Agent Challenge</title>
+<style>
+  :root { --fg:#111;--muted:#6b6b6b;--light:#a8a179;--yellow:#FBD45B;--card:#F5F4EF;
+          --card-alt:#EEECE4;--border:#C0BDAD;--border-light:#E6E0CB;--shadow:#C0BDAD;
+          --red:#c0392b;--green:#1a7a3a;--blue:#1a4a8a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
+         background:#fff; color:var(--fg); max-width:816px; margin:0 auto;
+         padding:48px 24px 80px; line-height:1.7; font-size:14px; }
+  h1 { font-family:Georgia,'Times New Roman',serif; font-size:2rem; font-weight:400;
+       line-height:1.2; margin-bottom:8px; letter-spacing:-0.5px; }
+  h2 { font-family:Georgia,'Times New Roman',serif; font-size:1.25rem; font-weight:400;
+       margin:48px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border-light); }
+  h3 { font-family:Georgia,'Times New Roman',serif; font-size:1.05rem; font-weight:400;
+       margin:28px 0 10px; }
+  p { margin:8px 0; }
+  .sub { font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.78rem;
+         color:var(--light); margin-bottom:36px; }
+  code { font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.82em;
+         background:var(--card); padding:1px 5px; border-radius:2px;
+         border:1px solid var(--border-light); }
+  .box { border:1px solid var(--border); padding:28px 16px 14px; margin:12px 0;
+         font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.78rem;
+         line-height:1.6; position:relative; background:#fff; }
+  .tag { position:absolute; top:-1px; right:-1px; font-family:-apple-system,Helvetica,sans-serif;
+         font-size:0.58rem; font-weight:700; text-transform:uppercase;
+         letter-spacing:1px; padding:2px 8px; }
+  .card { background:var(--card); border:1px solid var(--border);
+          box-shadow:3px 3px 0px var(--shadow); padding:20px; margin:16px 0; }
+  .card pre { font-family:'SF Mono','Fira Mono',Consolas,monospace;
+              font-size:0.78rem; white-space:pre-wrap; line-height:1.5; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.82rem; }
+  th { text-align:left; padding:8px 10px; border-bottom:2px solid var(--fg); font-weight:600; }
+  td { padding:8px 10px; border-bottom:1px solid var(--border-light); }
+  td:last-child, th:last-child { text-align:right; }
+  .divider { border:none; border-top:1px solid var(--border-light); margin:40px 0; }
+  .cap { font-family:'SF Mono',Consolas,monospace; font-size:0.7rem; color:var(--light);
+         text-align:center; margin:8px 0; }
+  .callout { background:var(--card); border:1px solid var(--border);
+             padding:14px 18px; margin:16px 0; font-size:0.85rem;
+             border-left:3px solid var(--yellow); }
+  ol, ul { margin:8px 0 8px 24px; }
+  li { margin:4px 0; }
+  .formula { font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.82rem;
+             background:var(--card); border:1px solid var(--border);
+             padding:16px 20px; margin:12px 0; line-height:1.8; overflow-x:auto; }
+  .lang-toggle { display:flex; gap:0; margin-bottom:32px; }
+  .lang-toggle button { font-family:'SF Mono','Fira Mono',Consolas,monospace;
+    font-size:0.78rem; font-weight:600; padding:6px 18px; border:1px solid var(--border);
+    cursor:pointer; background:#fff; color:var(--muted); transition:background 0.15s,color 0.15s; }
+  .lang-toggle button:first-child { border-radius:4px 0 0 4px; border-right:none; }
+  .lang-toggle button:last-child { border-radius:0 4px 4px 0; }
+  .lang-toggle button.active { background:var(--fg); color:#fff; border-color:var(--fg); }
+  .lang-content { display:none; }
+  .lang-content.active { display:block; }
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btn-en" class="active" onclick="switchLang('en')">English</button>
+  <button id="btn-ko" onclick="switchLang('ko')">한국어</button>
+</div>
+
+<!-- ==================== ENGLISH ==================== -->
+<div id="content-en" class="lang-content active">
+
+<h1>VideoAgent</h1>
+<p class="sub">KRAFTON AI R&amp;D Hackathon &middot; Round 2 &middot; Problem 3 &middot; 5 Hours &middot; Spring 2026</p>
+
+<p>Design and build an <b>automated video analysis system</b> that can watch videos
+and answer <b>objective, factual</b> multiple-choice questions about their visual content.
+Every question has a single unambiguous ground-truth answer &mdash;
+there is nothing subjective or open to interpretation.
+Your system must process <b>20 video&ndash;prompt pairs</b> and return one answer letter per pair.</p>
+
+<div class="callout">
+<b>Answer 20 multiple-choice questions about 20 videos.</b><br>
+Submit a single string of exactly 20 letters (e.g., <code>ABCAZBBGHADDCBAADBCA</code>).
+</div>
+
+<h2>Test-Time Input</h2>
+
+<p>At test time your agent will receive a folder with the following structure:</p>
+
+<div class="card">
+<pre>test_folder/
+  video1.mp4
+  video2.mp4
+  &hellip;
+  video20.mp4
+  prompt1.txt
+  prompt2.txt
+  &hellip;
+  prompt20.txt</pre>
+</div>
+
+<table>
+<tr><th>File</th><th style="text-align:right;">Description</th></tr>
+<tr><td><code>videoN.mp4</code></td><td style="text-align:right;">A video file, up to <b>1200 seconds</b> in length</td></tr>
+<tr><td><code>promptN.txt</code></td><td style="text-align:right;">A multiple-choice question about <code>videoN.mp4</code></td></tr>
+</table>
+
+<p>Each <code>promptN.txt</code> contains a question with labeled answer choices.
+The number of choices may vary across prompts.</p>
+
+<h3>Example Prompts</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;">
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--green);color:#fff;">prompt1.txt</span>
+  <span style="font-size:0.75rem;">
+  How many cars pass through the<br>
+  intersection in video1.mp4?<br><br>
+  A) 3<br>
+  B) 5<br>
+  C) 7<br>
+  D) 9
+  </span>
+</div>
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--blue);color:#fff;">prompt2.txt</span>
+  <span style="font-size:0.75rem;">
+  In which direction does the ball<br>
+  move at the end of video2.mp4?<br><br>
+  A) Left to right<br>
+  B) Right to left<br>
+  C) Upward<br>
+  D) Downward
+  </span>
+</div>
+</div>
+
+<h3>Question Categories</h3>
+
+<p>All questions are <b>objective and verifiable</b> &mdash; every answer can be determined
+by carefully observing the video. Question types include but are not limited to:</p>
+
+<table>
+<tr><th>Category</th><th style="text-align:right;">Example</th></tr>
+<tr><td><b>Counting</b></td><td style="text-align:right;">How many people / cars / objects appear?</td></tr>
+<tr><td><b>Color &amp; appearance</b></td><td style="text-align:right;">What color is the largest object?</td></tr>
+<tr><td><b>Spatial relations</b></td><td style="text-align:right;">Which object is closest to the camera?</td></tr>
+<tr><td><b>Motion &amp; direction</b></td><td style="text-align:right;">In which direction does the person walk?</td></tr>
+<tr><td><b>Temporal ordering</b></td><td style="text-align:right;">Which event happens first?</td></tr>
+<tr><td><b>Presence / absence</b></td><td style="text-align:right;">Does a bicycle appear at any point?</td></tr>
+</table>
+
+<div class="callout" style="border-left-color: var(--blue);">
+<b>Important.</b>&ensp;The examples above are illustrative only.
+Your agent must <b>not</b> assume any particular question format or number of choices.
+However, every question will be <b>objective</b> &mdash; no opinion, no aesthetic judgment,
+no ambiguity. If you watch the video carefully enough, the answer is unambiguous.
+</div>
+
+<h2>Requirements</h2>
+
+<ol>
+  <li><b>Generality.</b> Your system must handle arbitrary video questions without hard-coded assumptions about the task type.</li>
+  <li><b>Throughput.</b> The test folder will be released <b>15 minutes before the deadline</b>. Your system must process all 20 videos and produce answers within that window.</li>
+  <li><b>Automation.</b> Once started, the system should run end-to-end without manual intervention.</li>
+</ol>
+
+<div class="callout">
+<b>No architectural constraints.</b>&ensp;You are free to build a multi-step agentic pipeline,
+or a single model call, or anything in between. Use whatever approach you believe
+will maximize accuracy within the time budget.
+</div>
+
+<h3>Latency Budget</h3>
+
+<div class="box">
+  <span class="tag" style="background:var(--red);color:#fff;">Time Constraint</span>
+  <span style="font-size:0.75rem;">
+  Videos released:&ensp;&ensp;T &minus; 15 min<br>
+  Submission deadline:&ensp;T<br><br>
+  &rarr; 20 videos in &le; 15 min<br>
+  &rarr; ~45 seconds per video (sequential)<br>
+  &rarr; Consider <b>parallelization</b> to stay within budget
+  </span>
+</div>
+
+<p>Videos can be up to 1200 seconds (20 minutes) long. You should carefully plan
+your video processing pipeline &mdash; frame sampling, chunking, summarization &mdash;
+to balance accuracy against the strict time budget.</p>
+
+<h2>Design Considerations</h2>
+
+<p>You are free to use any tools, APIs, or models. Some strategies to consider:</p>
+
+<ul>
+  <li><b>Frame sampling:</b> Extract key frames at fixed intervals or using scene-change detection.</li>
+  <li><b>Video chunking:</b> Split long videos into segments and analyze independently.</li>
+  <li><b>Multi-modal models:</b> Use vision-language models that accept image or video inputs.</li>
+  <li><b>Temporal tracking:</b> Track objects or events across frames to answer ordering and counting questions.</li>
+  <li><b>Parallel processing:</b> Process multiple videos concurrently to meet the time budget.</li>
+  <li><b>Specialized vision tools:</b> Object detection, tracking, or counting models as pre-processing steps.</li>
+</ul>
+
+<div class="callout" style="border-left-color: var(--red);">
+<b>Hint.</b>&ensp;Naively feeding a video to a state-of-the-art multimodal model (e.g., Gemini)
+and asking for the answer is <b>not sufficient</b> for many of these questions.
+We encourage you to try this baseline early and observe where it fails &mdash;
+that will inform the design of your system.
+</div>
+
+<h2>Evaluation</h2>
+
+<p>Each of the 20 answers is scored as correct (1) or incorrect (0).</p>
+
+<div class="formula">
+Score = (1 / 20) &times; &Sigma;<sub>i=1</sub><sup>20</sup>
+&Iota;[ answer<sub>i</sub> = ground_truth<sub>i</sub> ]
+</div>
+
+<p>A score of <b>1.0</b> is perfect; <b>0.0</b> means no correct answers. <b>Higher is better.</b></p>
+
+<h2>Submission Format</h2>
+
+<p>Submit via the provided Google Form:</p>
+
+<ol>
+  <li><b>Answer key:</b> A single string of exactly <b>20 letters</b>, where the <i>i</i>-th letter
+  is your answer for <code>promptN.txt</code> / <code>videoN.mp4</code>.<br>
+  Example: <code>ABCAZBBGHADDCBAADBCA</code></li>
+  <li><b>Report:</b> A single <b>zip file</b> containing your report, explaining your agent design,
+  pipeline architecture, and any interesting findings.</li>
+</ol>
+
+<div class="callout">
+<b>Tip.</b>&ensp;Spend the first 4 hours 45 minutes designing, building, and testing your system.
+Use the final 15 minutes to run it on the released test set and submit.
+</div>
+
+<hr class="divider">
+<p style="font-size:0.78rem;color:var(--light);text-align:center;">
+VideoAgent &middot; KRAFTON AI R&amp;D Hackathon &middot; Round 2, Problem 3
+</p>
+</div>
+
+<!-- ==================== KOREAN ==================== -->
+<div id="content-ko" class="lang-content">
+
+<h1>VideoAgent</h1>
+<p class="sub">KRAFTON AI R&amp;D Hackathon &middot; Round 2 &middot; Problem 3 &middot; 5 Hours &middot; Spring 2026</p>
+
+<p><b>자동화된 비디오 분석 시스템</b>을 설계하고 구축하세요.
+비디오를 시청하고 시각적 내용에 대한 <b>객관적이고 사실적인</b> 객관식 질문에 답해야 합니다.
+모든 질문은 명확한 정답이 하나 존재하며 &mdash;
+주관적이거나 해석의 여지가 있는 질문은 없습니다.
+시스템은 <b>20개의 비디오&ndash;프롬프트 쌍</b>을 처리하고 각 쌍에 대해 하나의 답을 반환해야 합니다.</p>
+
+<div class="callout">
+<b>20개 비디오에 대한 20개 객관식 질문에 답하세요.</b><br>
+정확히 20개의 알파벳으로 구성된 문자열을 제출합니다 (예: <code>ABCAZBBGHADDCBAADBCA</code>).
+</div>
+
+<h2>테스트 시 입력</h2>
+
+<p>테스트 시 에이전트에게 다음 구조의 폴더가 제공됩니다:</p>
+
+<div class="card">
+<pre>test_folder/
+  video1.mp4
+  video2.mp4
+  &hellip;
+  video20.mp4
+  prompt1.txt
+  prompt2.txt
+  &hellip;
+  prompt20.txt</pre>
+</div>
+
+<table>
+<tr><th>파일</th><th style="text-align:right;">설명</th></tr>
+<tr><td><code>videoN.mp4</code></td><td style="text-align:right;">최대 <b>1200초</b> 길이의 비디오 파일</td></tr>
+<tr><td><code>promptN.txt</code></td><td style="text-align:right;"><code>videoN.mp4</code>에 대한 객관식 질문</td></tr>
+</table>
+
+<p>각 <code>promptN.txt</code>에는 레이블이 붙은 답안 선택지가 있는 질문이 포함됩니다.
+선택지의 수는 프롬프트마다 다를 수 있습니다.</p>
+
+<h3>프롬프트 예시</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;">
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--green);color:#fff;">prompt1.txt</span>
+  <span style="font-size:0.75rem;">
+  video1.mp4에서 교차로를 지나가는<br>
+  자동차는 몇 대인가요?<br><br>
+  A) 3대<br>
+  B) 5대<br>
+  C) 7대<br>
+  D) 9대
+  </span>
+</div>
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--blue);color:#fff;">prompt2.txt</span>
+  <span style="font-size:0.75rem;">
+  video2.mp4의 마지막에 공이<br>
+  어느 방향으로 이동하나요?<br><br>
+  A) 왼쪽에서 오른쪽으로<br>
+  B) 오른쪽에서 왼쪽으로<br>
+  C) 위쪽으로<br>
+  D) 아래쪽으로
+  </span>
+</div>
+</div>
+
+<h3>질문 유형</h3>
+
+<p>모든 질문은 <b>객관적이며 검증 가능</b>합니다 &mdash; 비디오를 주의 깊게 관찰하면
+모든 답을 확인할 수 있습니다. 질문 유형은 다음을 포함하되 이에 국한되지 않습니다:</p>
+
+<table>
+<tr><th>유형</th><th style="text-align:right;">예시</th></tr>
+<tr><td><b>개수 세기</b></td><td style="text-align:right;">사람 / 자동차 / 물체가 몇 개 등장하는가?</td></tr>
+<tr><td><b>색상 &amp; 외관</b></td><td style="text-align:right;">가장 큰 물체의 색상은?</td></tr>
+<tr><td><b>공간 관계</b></td><td style="text-align:right;">카메라에 가장 가까운 물체는?</td></tr>
+<tr><td><b>움직임 &amp; 방향</b></td><td style="text-align:right;">사람이 어느 방향으로 걸어가는가?</td></tr>
+<tr><td><b>시간 순서</b></td><td style="text-align:right;">어떤 사건이 먼저 발생하는가?</td></tr>
+<tr><td><b>존재 유무</b></td><td style="text-align:right;">자전거가 화면에 등장하는가?</td></tr>
+</table>
+
+<div class="callout" style="border-left-color: var(--blue);">
+<b>중요.</b>&ensp;위 예시는 설명을 위한 것입니다.
+에이전트는 특정 질문 형식이나 선택지 수를 <b>가정하지 않아야</b> 합니다.
+단, 모든 질문은 <b>객관적</b>입니다 &mdash; 의견, 미적 판단, 모호함이 없습니다.
+비디오를 충분히 주의 깊게 관찰하면 답은 명확합니다.
+</div>
+
+<h2>요구 사항</h2>
+
+<ol>
+  <li><b>범용성.</b> 시스템은 작업 유형에 대한 하드코딩된 가정 없이 임의의 비디오 질문을 처리할 수 있어야 합니다.</li>
+  <li><b>처리량.</b> 테스트 폴더는 <b>마감 15분 전</b>에 공개됩니다. 시스템은 해당 시간 내에 20개 비디오를 모두 처리하고 답을 생성해야 합니다.</li>
+  <li><b>자동화.</b> 일단 시작되면, 시스템은 수동 개입 없이 처음부터 끝까지 실행되어야 합니다.</li>
+</ol>
+
+<div class="callout">
+<b>아키텍처 제약 없음.</b>&ensp;다단계 에이전트 파이프라인, 단일 모델 호출,
+또는 그 사이의 어떤 방식이든 자유롭게 사용할 수 있습니다.
+시간 예산 내에서 정확도를 최대화할 수 있는 접근 방식을 선택하세요.
+</div>
+
+<h3>시간 예산</h3>
+
+<div class="box">
+  <span class="tag" style="background:var(--red);color:#fff;">시간 제약</span>
+  <span style="font-size:0.75rem;">
+  비디오 공개:&ensp;&ensp;&ensp;T &minus; 15분<br>
+  제출 마감:&ensp;&ensp;&ensp;&ensp;T<br><br>
+  &rarr; 20개 비디오를 &le; 15분 내 처리<br>
+  &rarr; 순차 처리 시 비디오당 ~45초<br>
+  &rarr; 시간 예산을 맞추려면 <b>병렬 처리</b>를 고려하세요
+  </span>
+</div>
+
+<p>비디오는 최대 1200초(20분) 길이입니다. 비디오 처리 파이프라인 &mdash;
+프레임 샘플링, 청킹, 요약 &mdash; 을 신중히 설계하여
+엄격한 시간 예산 내에서 정확도와 속도의 균형을 맞추세요.</p>
+
+<h2>설계 고려사항</h2>
+
+<p>어떤 도구, API, 모델이든 자유롭게 사용할 수 있습니다. 고려할 전략:</p>
+
+<ul>
+  <li><b>프레임 샘플링:</b> 고정 간격 또는 장면 전환 감지를 사용하여 핵심 프레임을 추출.</li>
+  <li><b>비디오 청킹:</b> 긴 비디오를 세그먼트로 분할하여 독립적으로 분석.</li>
+  <li><b>멀티모달 모델:</b> 이미지 또는 비디오 입력을 받는 비전-언어 모델 활용.</li>
+  <li><b>시간적 추적:</b> 프레임 간 객체나 이벤트를 추적하여 순서 및 개수 질문에 답변.</li>
+  <li><b>병렬 처리:</b> 여러 비디오를 동시에 처리하여 시간 예산을 충족.</li>
+  <li><b>특화된 비전 도구:</b> 전처리 단계로 객체 감지, 추적, 또는 카운팅 모델 활용.</li>
+</ul>
+
+<div class="callout" style="border-left-color: var(--red);">
+<b>힌트.</b>&ensp;최신 멀티모달 모델(예: Gemini)에 비디오를 그대로 넣고
+답을 요청하는 단순한 방식으로는 많은 질문에서 <b>충분한 성능을 내기 어렵습니다</b>.
+이 베이스라인을 먼저 시도해보고 어디서 실패하는지 관찰하세요 &mdash;
+그것이 시스템 설계의 출발점이 될 것입니다.
+</div>
+
+<h2>평가</h2>
+
+<p>20개 답안 각각에 대해 정답(1) 또는 오답(0)으로 채점됩니다.</p>
+
+<div class="formula">
+Score = (1 / 20) &times; &Sigma;<sub>i=1</sub><sup>20</sup>
+&Iota;[ answer<sub>i</sub> = ground_truth<sub>i</sub> ]
+</div>
+
+<p>점수 <b>1.0</b>은 완벽한 정답, <b>0.0</b>은 전부 오답. <b>높을수록 좋습니다.</b></p>
+
+<h2>제출 형식</h2>
+
+<p>제공된 Google Form을 통해 제출하세요:</p>
+
+<ol>
+  <li><b>정답 키:</b> 정확히 <b>20개의 알파벳</b>으로 구성된 문자열. <i>i</i>번째 글자는
+  <code>promptN.txt</code> / <code>videoN.mp4</code>에 대한 답.<br>
+  예시: <code>ABCAZBBGHADDCBAADBCA</code></li>
+  <li><b>보고서:</b> 에이전트 설계, 파이프라인 구조, 흥미로운 발견을 설명하는
+  보고서가 포함된 <b>zip 파일</b> 1개.</li>
+</ol>
+
+<div class="callout">
+<b>팁.</b>&ensp;처음 4시간 45분은 시스템을 설계, 구축, 테스트하는 데 사용하세요.
+마지막 15분에 공개된 테스트 세트에 시스템을 실행하고 제출하세요.
+</div>
+
+<hr class="divider">
+<p style="font-size:0.78rem;color:var(--light);text-align:center;">
+VideoAgent &middot; KRAFTON AI R&amp;D Hackathon &middot; Round 2, Problem 3
+</p>
+</div>
+
+<script>
+function switchLang(lang) {
+  document.getElementById('content-en').classList.toggle('active', lang === 'en');
+  document.getElementById('content-ko').classList.toggle('active', lang === 'ko');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
+  document.documentElement.lang = lang;
+}
+</script>
+</body>
+</html>
