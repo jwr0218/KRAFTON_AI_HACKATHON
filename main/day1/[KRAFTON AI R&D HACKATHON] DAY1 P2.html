@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BattlePredict — The Battle Royale Prediction Challenge</title>
+<style>
+  :root { --fg:#111;--muted:#6b6b6b;--light:#a8a179;--yellow:#FBD45B;--card:#F5F4EF;
+          --card-alt:#EEECE4;--border:#C0BDAD;--border-light:#E6E0CB;--shadow:#C0BDAD;
+          --red:#c0392b;--green:#1a7a3a;--blue:#1a4a8a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
+         background:#fff; color:var(--fg); max-width:816px; margin:0 auto;
+         padding:48px 24px 80px; line-height:1.7; font-size:14px; }
+  h1 { font-family:Georgia,'Times New Roman',serif; font-size:2rem; font-weight:400;
+       line-height:1.2; margin-bottom:8px; letter-spacing:-0.5px; }
+  h2 { font-family:Georgia,'Times New Roman',serif; font-size:1.25rem; font-weight:400;
+       margin:48px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border-light); }
+  h3 { font-family:Georgia,'Times New Roman',serif; font-size:1.05rem; font-weight:400;
+       margin:28px 0 10px; }
+  p { margin:8px 0; }
+  .sub { font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.78rem;
+         color:var(--light); margin-bottom:36px; }
+  code { font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.82em;
+         background:var(--card); padding:1px 5px; border-radius:2px;
+         border:1px solid var(--border-light); }
+  .box { border:1px solid var(--border); padding:28px 16px 14px; margin:12px 0;
+         font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.78rem;
+         line-height:1.6; position:relative; background:#fff; }
+  .tag { position:absolute; top:-1px; right:-1px; font-family:-apple-system,Helvetica,sans-serif;
+         font-size:0.58rem; font-weight:700; text-transform:uppercase;
+         letter-spacing:1px; padding:2px 8px; }
+  .card { background:var(--card); border:1px solid var(--border);
+          box-shadow:3px 3px 0px var(--shadow); padding:20px; margin:16px 0; }
+  .card pre { font-family:'SF Mono','Fira Mono',Consolas,monospace;
+              font-size:0.78rem; white-space:pre-wrap; line-height:1.5; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.82rem; }
+  th { text-align:left; padding:8px 10px; border-bottom:2px solid var(--fg); font-weight:600; }
+  td { padding:8px 10px; border-bottom:1px solid var(--border-light); }
+  td:last-child, th:last-child { text-align:right; }
+  .divider { border:none; border-top:1px solid var(--border-light); margin:40px 0; }
+  .cap { font-family:'SF Mono',Consolas,monospace; font-size:0.7rem; color:var(--light);
+         text-align:center; margin:8px 0; }
+  .callout { background:var(--card); border:1px solid var(--border);
+             padding:14px 18px; margin:16px 0; font-size:0.85rem;
+             border-left:3px solid var(--yellow); }
+  ol, ul { margin:8px 0 8px 24px; }
+  li { margin:4px 0; }
+  .formula { font-family:'SF Mono','Fira Mono',Consolas,monospace; font-size:0.82rem;
+             background:var(--card); border:1px solid var(--border);
+             padding:16px 20px; margin:12px 0; line-height:1.8; overflow-x:auto; }
+  .lang-toggle { display:flex; gap:0; margin-bottom:32px; }
+  .lang-toggle button { font-family:'SF Mono','Fira Mono',Consolas,monospace;
+    font-size:0.78rem; font-weight:600; padding:6px 18px; border:1px solid var(--border);
+    cursor:pointer; background:#fff; color:var(--muted); transition:background 0.15s,color 0.15s; }
+  .lang-toggle button:first-child { border-radius:4px 0 0 4px; border-right:none; }
+  .lang-toggle button:last-child { border-radius:0 4px 4px 0; }
+  .lang-toggle button.active { background:var(--fg); color:#fff; border-color:var(--fg); }
+  .lang-content { display:none; }
+  .lang-content.active { display:block; }
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btn-en" class="active" onclick="switchLang('en')">English</button>
+  <button id="btn-ko" onclick="switchLang('ko')">한국어</button>
+</div>
+
+<!-- ==================== ENGLISH ==================== -->
+<div id="content-en" class="lang-content active">
+
+<h1>BattlePredict</h1>
+<p class="sub">KRAFTON AI R&amp;D Hackathon &middot; Round 2 &middot; Problem 2 &middot; 4 Hours &middot; Spring 2026</p>
+
+<p>Ten players compete in battle royale matches over <b>50 days</b>.
+Each day has <b>50 matches</b>. Each match has <b>5 participants</b> drawn from the 10 players.
+In each match, participants fight in a <b>gauntlet</b> &mdash; a sequence of 1v1 duels &mdash;
+until only one remains.</p>
+
+<div class="callout">
+<b>Predict the total number of kills per player in days 22&ndash;50.</b><br>
+Submit exactly 10 numbers.
+</div>
+
+<h2>How a Match Works</h2>
+
+<p>Each match has <b>5 participants</b> (a subset of the 10 players) arranged in a <b>gauntlet order</b>.</p>
+
+<ol>
+  <li>The first two players fight. One wins, one is <b>eliminated</b>.</li>
+  <li>The survivor fights the third player.</li>
+  <li>The survivor fights the fourth player.</li>
+  <li>The survivor fights the fifth player. The final survivor wins.</li>
+</ol>
+
+<p>Each duel produces exactly one kill. Every match has exactly <b>4 kills</b>.</p>
+
+<h3>Worked Example</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;">
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--green);color:#fff;">Gauntlet: 3 7 2 9 0</span>
+  <span style="font-size:0.75rem;">
+  Duel 1: <b>3</b> vs <b>7</b> &rarr; 7 wins &rarr; <code>7&gt;3</code><br>
+  Duel 2: <b>7</b> vs <b>2</b> &rarr; 7 wins &rarr; <code>7&gt;2</code><br>
+  Duel 3: <b>7</b> vs <b>9</b> &rarr; 9 wins &rarr; <code>9&gt;7</code><br>
+  Duel 4: <b>9</b> vs <b>0</b> &rarr; 0 wins &rarr; <code>0&gt;9</code><br><br>
+  Kill events: <code>7&gt;3 7&gt;2 9&gt;7 0&gt;9</code>
+  </span>
+</div>
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--blue);color:#fff;">Reading kill events</span>
+  <span style="font-size:0.75rem;">
+  <code>A&gt;B</code> means <b>A killed B</b>.<br><br>
+  From <code>7&gt;3 7&gt;2 9&gt;7 0&gt;9</code>:<br>
+  &bull; Player 7 killed players 3 and 2<br>
+  &bull; Player 9 killed player 7<br>
+  &bull; Player 0 killed player 9<br><br>
+  Only the 5 participants can appear in kill events.
+  </span>
+</div>
+</div>
+
+<h2>Dataset</h2>
+
+<p>The dataset <code>dataset.csv</code> has three columns:</p>
+
+<table>
+<tr><th>Column</th><th style="text-align:right;">Description</th></tr>
+<tr><td><code>day</code></td><td style="text-align:right;">Day number (1&ndash;50), or <code>?</code> if hidden</td></tr>
+<tr><td><code>match_in_day</code></td><td style="text-align:right;">Match index within the day (1&ndash;50)</td></tr>
+<tr><td><code>events</code></td><td style="text-align:right;">Kill events <b>or</b> gauntlet order</td></tr>
+</table>
+
+<p>The 2500 rows are organized as follows:</p>
+
+<table>
+<tr><th>Rows</th><th>Day</th><th style="text-align:right;">Events</th></tr>
+<tr><td>1&ndash;50</td><td>1</td><td style="text-align:right;">Kill events</td></tr>
+<tr><td>51&ndash;500</td><td><code>?</code> (9 blocks of 50)</td><td style="text-align:right;">Kill events</td></tr>
+<tr><td>501&ndash;550</td><td>11</td><td style="text-align:right;">Kill events</td></tr>
+<tr><td>551&ndash;1000</td><td><code>?</code> (9 blocks of 50)</td><td style="text-align:right;">Kill events</td></tr>
+<tr><td>1001&ndash;1050</td><td>21</td><td style="text-align:right;">Kill events</td></tr>
+<tr><td>1051&ndash;2500</td><td>22&ndash;50</td><td style="text-align:right;"><b>Gauntlet order only</b></td></tr>
+</table>
+
+<p>The <code>?</code> rows contain day-blocks. Each block is 50 matches from a single day
+between day 2&ndash;10 or day 12&ndash;20. The day label is hidden, but
+within each block the 50 matches are in their original order.</p>
+
+<div class="card">
+<pre>day,match_in_day,events
+1,1,1>3 1>2 1>4 0>1
+1,2,0>4 0>2 1>0 1>3
+&hellip;
+?,1,2>4 2>3 0>2 0>1            &larr; day hidden
+?,2,1>4 2>1 0>2 0>3
+&hellip;
+11,1,0>4 0>1 0>3 0>2
+&hellip;
+?,1,4>0 4>1 4>3 4>2            &larr; day hidden
+&hellip;
+21,1,0>3 0>2 0>4 1>0
+&hellip;
+22,1,1 4 0 2 3                 &larr; gauntlet order only
+22,2,0 3 2 4 1
+&hellip;</pre>
+</div>
+
+<div class="callout" style="border-left-color: var(--blue);">
+<b>Note.</b>&ensp;Some values are missing in the dataset. This is intentional.
+Not all players appear in every match.
+</div>
+
+<h2>Task</h2>
+
+<p>For each of the 10 players, predict their <b>total number of kills across days 22&ndash;50</b>
+(1450 matches).</p>
+
+<p>The gauntlet orders for the test matches are given, so you know
+which 5 players participate in each match. You just need to predict the outcomes.</p>
+
+<h2>Evaluation</h2>
+
+<p>There are 1450 test matches &times; 4 kills = 5800 total kills.
+Both predicted and true kills sum to 5800, so the maximum Sum&nbsp;AE is 11600.</p>
+
+<div class="formula">
+Score = (1 / 11600) &times; &Sigma;<sub>i=0</sub><sup>9</sup>
+| k&#770;<sub>i</sub> &minus; k<sub>i</sub> |
+</div>
+
+<p>A score of <b>0</b> is perfect; <b>1</b> is worst-case. <b>Lower is better.</b></p>
+
+<h2>Submission Format</h2>
+
+<p>Submit exactly <b>10 numbers</b> via the provided Google Form:
+the predicted total kills for each player (user_0 through user_9) across days 22&ndash;50.
+Integer or float values accepted.</p>
+
+<p>Also submit a single short PDF file <code>approach.pdf</code> (max 2 pages) explaining your approach.</p>
+
+<hr class="divider">
+<p style="font-size:0.78rem;color:var(--light);text-align:center;">
+BattlePredict &middot; KRAFTON AI R&amp;D Hackathon &middot; Round 2, Problem 2
+</p>
+</div>
+
+<!-- ==================== KOREAN ==================== -->
+<div id="content-ko" class="lang-content">
+
+<h1>BattlePredict</h1>
+<p class="sub">KRAFTON AI R&amp;D Hackathon &middot; Round 2 &middot; Problem 2 &middot; 4 Hours &middot; Spring 2026</p>
+
+<p>10명의 플레이어가 <b>50일</b>에 걸쳐 배틀로얄 매치를 합니다.
+매일 <b>50경기</b>가 진행됩니다. 각 매치에는 10명 중 <b>5명</b>이 참가합니다.
+각 매치에서 참가자들은 <b>건틀릿</b> &mdash; 1대1 결투의 연속 &mdash; 을 통해
+마지막 한 명이 남을 때까지 싸웁니다.</p>
+
+<div class="callout">
+<b>22&ndash;50일차의 각 플레이어 총 킬 수를 예측하세요.</b><br>
+정확히 10개의 숫자를 제출합니다.
+</div>
+
+<h2>매치 진행 방식</h2>
+
+<p>각 매치에는 10명 중 <b>5명</b>이 <b>건틀릿 순서</b>로 참가합니다.</p>
+
+<ol>
+  <li>처음 두 플레이어가 싸웁니다. 한 명이 이기고, 한 명이 <b>탈락</b>합니다.</li>
+  <li>생존자가 세 번째 플레이어와 싸웁니다.</li>
+  <li>생존자가 네 번째 플레이어와 싸웁니다.</li>
+  <li>생존자가 다섯 번째 플레이어와 싸웁니다. 최종 생존자가 승리합니다.</li>
+</ol>
+
+<p>각 결투는 정확히 하나의 킬을 생성합니다. 매 매치마다 정확히 <b>4킬</b>이 발생합니다.</p>
+
+<h3>계산 예시</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;">
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--green);color:#fff;">건틀릿: 3 7 2 9 0</span>
+  <span style="font-size:0.75rem;">
+  결투 1: <b>3</b> vs <b>7</b> &rarr; 7 승리 &rarr; <code>7&gt;3</code><br>
+  결투 2: <b>7</b> vs <b>2</b> &rarr; 7 승리 &rarr; <code>7&gt;2</code><br>
+  결투 3: <b>7</b> vs <b>9</b> &rarr; 9 승리 &rarr; <code>9&gt;7</code><br>
+  결투 4: <b>9</b> vs <b>0</b> &rarr; 0 승리 &rarr; <code>0&gt;9</code><br><br>
+  킬 이벤트: <code>7&gt;3 7&gt;2 9&gt;7 0&gt;9</code>
+  </span>
+</div>
+<div class="box" style="margin:0;">
+  <span class="tag" style="background:var(--blue);color:#fff;">킬 이벤트 읽기</span>
+  <span style="font-size:0.75rem;">
+  <code>A&gt;B</code>는 <b>A가 B를 처치</b>했다는 의미입니다.<br><br>
+  <code>7&gt;3 7&gt;2 9&gt;7 0&gt;9</code>로부터:<br>
+  &bull; 플레이어 7이 플레이어 3과 2를 처치<br>
+  &bull; 플레이어 9가 플레이어 7을 처치<br>
+  &bull; 플레이어 0이 플레이어 9를 처치<br><br>
+  5명의 참가자만 킬 이벤트에 등장합니다.
+  </span>
+</div>
+</div>
+
+<h2>데이터셋</h2>
+
+<p>데이터셋 <code>dataset.csv</code>에는 세 개의 열이 있습니다:</p>
+
+<table>
+<tr><th>열</th><th style="text-align:right;">설명</th></tr>
+<tr><td><code>day</code></td><td style="text-align:right;">일차 (1&ndash;50), 숨겨진 경우 <code>?</code></td></tr>
+<tr><td><code>match_in_day</code></td><td style="text-align:right;">해당 일차 내 매치 번호 (1&ndash;50)</td></tr>
+<tr><td><code>events</code></td><td style="text-align:right;">킬 이벤트 <b>또는</b> 건틀릿 순서</td></tr>
+</table>
+
+<p>2500개의 행은 다음과 같이 구성됩니다:</p>
+
+<table>
+<tr><th>행</th><th>일차</th><th style="text-align:right;">이벤트</th></tr>
+<tr><td>1&ndash;50</td><td>1</td><td style="text-align:right;">킬 이벤트</td></tr>
+<tr><td>51&ndash;500</td><td><code>?</code> (9개 블록, 각 50경기)</td><td style="text-align:right;">킬 이벤트</td></tr>
+<tr><td>501&ndash;550</td><td>11</td><td style="text-align:right;">킬 이벤트</td></tr>
+<tr><td>551&ndash;1000</td><td><code>?</code> (9개 블록, 각 50경기)</td><td style="text-align:right;">킬 이벤트</td></tr>
+<tr><td>1001&ndash;1050</td><td>21</td><td style="text-align:right;">킬 이벤트</td></tr>
+<tr><td>1051&ndash;2500</td><td>22&ndash;50</td><td style="text-align:right;"><b>건틀릿 순서만</b></td></tr>
+</table>
+
+<p><code>?</code> 행은 일별 블록입니다. 각 블록은 2&ndash;10일차 또는 12&ndash;20일차의
+하루에 해당하는 50경기입니다. 일차 라벨은 숨겨져 있지만
+각 블록 내에서 50경기는 원래 순서대로 정렬되어 있습니다.</p>
+
+<div class="card">
+<pre>day,match_in_day,events
+1,1,1>3 1>2 1>4 0>1
+1,2,0>4 0>2 1>0 1>3
+&hellip;
+?,1,2>4 2>3 0>2 0>1            &larr; 일차 숨김
+?,2,1>4 2>1 0>2 0>3
+&hellip;
+11,1,0>4 0>1 0>3 0>2
+&hellip;
+?,1,4>0 4>1 4>3 4>2            &larr; 일차 숨김
+&hellip;
+21,1,0>3 0>2 0>4 1>0
+&hellip;
+22,1,1 4 0 2 3                 &larr; 건틀릿 순서만
+22,2,0 3 2 4 1
+&hellip;</pre>
+</div>
+
+<div class="callout" style="border-left-color: var(--blue);">
+<b>참고.</b>&ensp;데이터셋에 일부 값이 누락되어 있습니다. 이는 의도된 것입니다.
+모든 플레이어가 매 경기에 참가하는 것은 아닙니다.
+</div>
+
+<h2>과제</h2>
+
+<p>10명의 플레이어 각각에 대해 <b>22&ndash;50일차(1450경기)에서의 총 킬 수</b>를 예측하세요.</p>
+
+<p>테스트 매치의 건틀릿 순서가 주어지므로, 각 경기에 어떤 5명이 참가하는지 알 수 있습니다.
+결과만 예측하면 됩니다.</p>
+
+<h2>평가</h2>
+
+<p>1450개 테스트 매치 &times; 4킬 = 총 5800킬.
+예측값과 실제값 모두 합이 5800이므로, 최대 Sum&nbsp;AE는 11600입니다.</p>
+
+<div class="formula">
+Score = (1 / 11600) &times; &Sigma;<sub>i=0</sub><sup>9</sup>
+| k&#770;<sub>i</sub> &minus; k<sub>i</sub> |
+</div>
+
+<p>점수 <b>0</b>은 완벽한 예측, <b>1</b>은 최악의 오차. <b>낮을수록 좋습니다.</b></p>
+
+<h2>제출 형식</h2>
+
+<p>제공된 Google Form을 통해 정확히 <b>10개의 숫자</b>를 제출하세요:
+22&ndash;50일차에서 각 플레이어(user_0부터 user_9)의 예측 총 킬 수.
+정수 또는 실수 값 허용.</p>
+
+<p>접근 방식을 설명하는 짧은 PDF 파일 <code>approach.pdf</code>(최대 2페이지)도 함께 제출하세요.</p>
+
+<hr class="divider">
+<p style="font-size:0.78rem;color:var(--light);text-align:center;">
+BattlePredict &middot; KRAFTON AI R&amp;D Hackathon &middot; Round 2, Problem 2
+</p>
+</div>
+
+<script>
+function switchLang(lang) {
+  document.getElementById('content-en').classList.toggle('active', lang === 'en');
+  document.getElementById('content-ko').classList.toggle('active', lang === 'ko');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
+  document.documentElement.lang = lang;
+}
+</script>
+</body>
+</html>

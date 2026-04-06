@@ -1,0 +1,31 @@
+Question: In this performance of Ravel's Bolero, the camera shows close-ups of various instruments throughout. Counting only close-up shots where the instrument is actively being played (exclude shots of instruments or musicians captured while not playing), which instrument is featured in the FIFTH such close-up?
+
+Options:
+A) Flute
+B) Clarinet in B♭
+C) Bassoon
+D) E♭ Clarinet
+E) Oboe d'Amore
+F) Trumpet in C
+G) Tenor Saxophone
+H) Soprano Saxophone
+I) French Horn
+J) Celeste
+K) Piccolo
+L) Oboe
+M) English Horn
+N) Trombone
+O) First Violins
+P) Second Violins
+Q) Violas
+R) Cellos
+S) Double Basses
+T) Harp
+U) Snare Drum
+V) Alto Saxophone
+W) Bass Clarinet
+X) Contrabassoon
+Y) Tuba
+Z) Timpani
+
+Answer with ONLY the letter (A-Z) of your answer.
