@@ -1,6 +1,6 @@
-# Krafton AI R&D Hackathon
+# KRAFTON AI R&D HACKATHON
 
-Krafton AI R&D 해커톤 참가 코드 저장소입니다.
+KRAFTON AI R&D 해커톤 참가 코드 저장소입니다.
 예선(Preliminary)과 본선(Main) 2개 라운드로 구성되며, 각 라운드는 Day 1 / Day 2 두 문제로 진행되었습니다.
 
 ---
