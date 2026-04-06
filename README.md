@@ -11,20 +11,27 @@ KRAFTON AI R&D 해커톤 참가 코드 저장소입니다.
 hackathon/
 ├── preliminary/
 │   ├── day1/
-│   │   ├── 1_1.py          # 문제 1-1: Zero-Parameter 트랜스포머 곱셈기
-│   │   ├── 1_2.py          # 문제 1-2: 학습 기반 Causal Transformer 곱셈기
-│   │   ├── 1_1.md          # 문제 1-1 설계 보고서
-│   │   └── 1_2.md          # 문제 1-2 실험 결과 보고서
+│   │   ├── [KRAFTON AI R&D HACKATHON] DAY1.html   # 문제지
+│   │   ├── 1_1.py                                  # 문제 1-1: Zero-Parameter 트랜스포머 곱셈기
+│   │   ├── 1_2.py                                  # 문제 1-2: 학습 기반 Causal Transformer 곱셈기
+│   │   ├── 1_1.md                                  # 문제 1-1 설계 보고서
+│   │   └── 1_2.md                                  # 문제 1-2 실험 결과 보고서
 │   └── day2/
-│       ├── faster_RANSAC.py     # Bitwise RANSAC (Numba JIT)
-│       └── faster_Gradient.py  # Hybrid RANSAC + Gradient Descent
+│       ├── [KRAFTON AI R&D HACKATHON] DAY2.html    # 문제지
+│       ├── faster_RANSAC.py                         # Bitwise RANSAC (Numba JIT)
+│       ├── faster_Gradient.py                       # Hybrid RANSAC + Gradient Descent
+│       └── answer/problem2_answer_local_search.txt  # 제출 답안
 └── main/
     ├── day1/
-    │   └── final_code.py        # 플레이어 실력 예측 파이프라인
+    │   ├── [KRAFTON AI R&D HACKATHON] DAY1 P2.html # 문제지
+    │   ├── dataset.csv                              # 경기 데이터
+    │   └── final_code.py                            # 플레이어 실력 예측 파이프라인
     └── day2/
-        ├── video_pipeline.py    # 2-Agent 비디오 분석 파이프라인
-        ├── prompt_analysis.py   # 프롬프트 → JSON 지시서 분해
-        └── run_all.py           # 20개 영상 비동기 일괄 처리
+        ├── KRAFTON_AI_HACKATHON_Finals_DAY2.html    # 문제지
+        ├── video_pipeline.py                        # 2-Agent 비디오 분석 파이프라인
+        ├── prompt_analysis.py                       # 프롬프트 → JSON 지시서 분해
+        ├── run_all.py                               # 20개 영상 비동기 일괄 처리
+        └── answer.txt                               # 제출 답안
 ```
 
 ---
